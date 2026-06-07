@@ -125,7 +125,7 @@ const result = await client.callTool({
 });
 ```
 
-Available tools: `search_skills`, `install_skill`, `list_categories`.
+Available tools: `search_skills`, `get_skill`, `list_categories`, `install_skill`, `remove_skill`, `publish_skill`.
 
 ---
 
