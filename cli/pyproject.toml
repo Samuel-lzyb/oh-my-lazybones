@@ -2,6 +2,10 @@
 name = "lazybones"
 version = "0.1.0"
 requires-python = ">=3.12"
+dependencies = ["typer", "httpx", "pyyaml"]
+
+[project.scripts]
+lazy = "lazybones.main:main"
 
 [build-system]
 requires = ["setuptools"]
