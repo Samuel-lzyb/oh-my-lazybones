@@ -5,7 +5,7 @@
 If you discover a security vulnerability in oh-my-lazybones,
 please **DO NOT** open a public issue.
 
-Email: security@lazybones.club
+Email: security@lazybone.club
 
 We will respond within 48 hours.
 

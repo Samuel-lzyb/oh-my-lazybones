@@ -29,4 +29,4 @@ node_modules/
 # 证书
 *.pem
 *.key
-*.crt
+*.crtcli/lazybones.egg-info/

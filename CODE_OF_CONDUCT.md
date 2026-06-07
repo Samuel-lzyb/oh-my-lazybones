@@ -15,4 +15,4 @@ Examples of behavior that contributes to a positive environment:
 ## Enforcement
 
 Instances of abusive behavior may be reported to the project team at
-security@lazybones.club.
+security@lazybone.club.
