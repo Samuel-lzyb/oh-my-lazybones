@@ -3,13 +3,31 @@
     <!-- Hero -->
     <div class="text-center mb-12">
       <div class="mb-8">
-        <svg class="mx-auto w-24 h-24 text-text-dim" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="1.5">
-          <ellipse cx="48" cy="52" rx="20" ry="16"/>
-          <circle cx="38" cy="42" r="5" fill="currentColor"/>
-          <circle cx="58" cy="42" r="5" fill="currentColor"/>
-          <path d="M42 58 Q48 64 54 58" stroke-width="2"/>
-          <path d="M24 44 Q20 30 32 24 Q44 18 48 28"/>
-          <path d="M72 44 Q76 30 64 24 Q52 18 48 28"/>
+        <svg class="mx-auto w-28 h-28 text-brand-amber" viewBox="0 0 112 112" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Head -->
+          <ellipse cx="56" cy="62" rx="26" ry="22"/>
+          <!-- Eye patches -->
+          <path d="M36 54 Q40 48 46 54" stroke-width="2"/>
+          <path d="M66 54 Q70 48 76 54" stroke-width="2"/>
+          <!-- Eyes — half-lidded -->
+          <path d="M38 58 Q42 56 46 58" stroke-width="1.5"/>
+          <path d="M66 58 Q70 56 74 58" stroke-width="1.5"/>
+          <!-- Nose -->
+          <ellipse cx="56" cy="64" rx="4" ry="3"/>
+          <!-- Smile -->
+          <path d="M48 72 Q56 78 64 72" stroke-width="1.5"/>
+          <!-- Left arm -->
+          <path d="M30 54 Q18 58 14 72 Q12 80 18 84" stroke-width="2"/>
+          <!-- Right arm -->
+          <path d="M82 54 Q94 58 98 72 Q100 80 94 84" stroke-width="2"/>
+          <!-- Claws -->
+          <path d="M14 82 L12 86" stroke-width="2"/>
+          <path d="M18 84 L18 88" stroke-width="2"/>
+          <path d="M98 82 L100 86" stroke-width="2"/>
+          <path d="M94 84 L94 88" stroke-width="2"/>
+          <!-- Brows -->
+          <path d="M34 46 Q40 42 48 44" stroke-width="1"/>
+          <path d="M64 44 Q72 42 78 46" stroke-width="1"/>
         </svg>
       </div>
       <h1 class="font-display text-4xl md:text-5xl font-bold text-text-soft mb-4">
