@@ -51,6 +51,10 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r server/requirements.txt
       - run: pip install -e cli/
+      # Create minimal frontend_dist so lazy serve doesn't try npm build
+      - run: |
+          mkdir -p cli/lazybones/frontend_dist
+          echo '<html><body>CI Smoke</body></html>' > cli/lazybones/frontend_dist/index.html
       - run: |
           lazy serve --port 19527 &
           sleep 5
