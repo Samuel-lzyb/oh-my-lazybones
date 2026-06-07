@@ -13,14 +13,27 @@ Closes #XX
 - [ ] Documentation
 - [ ] Refactor
 
+## Pre-Code Documents
+
+<!-- Required for feature PRs — link your design and test spec -->
+
+| Document | Link |
+|----------|------|
+| Design (`design.md`) | |
+| Test Spec (`test_spec.md`) | |
+
 ## AI Self-Review
+
+<!-- AI fills this — be honest -->
 
 | Check | Status |
 |-------|--------|
-| Consistent code style | ✅ |
-| Test coverage adequate | ✅ |
-| Documentation updated | ✅ |
-| No secrets / sensitive data | ✅ |
+| Code follows conventions (naming, style, English) | ✅ / ❌ |
+| No duplicated logic (pattern appears <3 times) | ✅ / ❌ |
+| Tests cover happy path + edge cases | ✅ / ❌ |
+| API changes documented (if any) | ✅ / ❌ |
+| No secrets or sensitive data | ✅ / ❌ |
+| Regression suite passes | ✅ / ❌ |
 
 ## Risk Points
 
@@ -29,13 +42,16 @@ Closes #XX
 ## How to Verify
 
 ```bash
-lazy search "xxx"   # → expected output
-lazy install yyy    # → expected output
+# Commands to verify the change works
 ```
 
-## Checklist
+## AI Acceptance Checklist
 
-- [ ] CI passes
-- [ ] No lint errors
-- [ ] Tests cover new logic
-- [ ] Documentation synced
+<!-- All must be ✅ before merge -->
+
+- [ ] CI green (lint + test + security + secret-scan)
+- [ ] Design doc approved (for features)
+- [ ] Test spec fully covered
+- [ ] AI self-review complete
+- [ ] No file >200 lines without justification
+- [ ] Regression workflow triggered and passed

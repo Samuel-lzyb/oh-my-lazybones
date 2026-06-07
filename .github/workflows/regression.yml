@@ -1,0 +1,78 @@
+name: Regression
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger for debugging
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    services:
+      meilisearch:
+        image: getmeili/meilisearch:v1.10
+        env:
+          MEILI_MASTER_KEY: test-key
+        ports: ["7700:7700"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+
+      - name: Install dependencies
+        run: |
+          pip install -r server/requirements.txt
+          pip install -e cli/
+
+      - name: Run full test suite
+        run: pytest -v --tb=short
+        env:
+          MEILI_URL: http://localhost:7700
+          MEILI_KEY: test-key
+
+      - name: Verify CLI works
+        run: |
+          lazy --help 2>&1 | grep -q "oh-my-lazybones" && echo "CLI OK" || (echo "CLI FAIL" && exit 1)
+
+      - name: Verify server imports
+        run: |
+          python -c "from server.main import app; print('Server import OK')"
+
+      - name: Verify package is importable
+        run: |
+          python -c "import lazybones; print(f'lazybones v{lazybones.__version__} OK')"
+
+  # ── Security regression ─────────────────────────────────
+  security-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check .env not committed
+        run: |
+          if git ls-files | grep -q '^.env$'; then
+            echo "FATAL: .env file committed!" && exit 1
+          fi
+
+      - name: Scan for secrets in history
+        run: |
+          # Quick grep for common secret patterns in committed files
+          ! git grep -nE '(password|secret|token|api_key)\s*=\s*["'"'"'][^$]{8,}' -- '*.py' '*.yml' '*.yaml' '*.json' || \
+          (echo "WARNING: Possible hardcoded secret found" && exit 0)
+
+  notify:
+    needs: [regression, security-regression]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Regression result
+        run: |
+          if [ "${{ needs.regression.result }}" = "success" ] && [ "${{ needs.security-regression.result }}" = "success" ]; then
+            echo "✅ Regression suite passed"
+          else
+            echo "❌ Regression suite failed"
+            echo "  - regression: ${{ needs.regression.result }}"
+            echo "  - security:   ${{ needs.security-regression.result }}"
+          fi
