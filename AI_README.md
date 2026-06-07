@@ -16,20 +16,23 @@
 |-----|------|
 | `https://lazybone.club` | Web UI (Vue 3 SPA) |
 | `https://api.lazybone.club/api/v1/health` | REST API (FastAPI) |
+| `http://localhost:9527/mcp/sse` | MCP Server (Agent-native) |
 
 ---
 
 ## Project Phase
 
-**Current: M4 (User Auth + Paid Skills)** — Starting soon.
+**Current: M5 ✅ → M6 (User Auth + Paid Skills) next.**
 
 | Phase | Goal | Status |
 |-------|------|:--:|
 | M1 | Repo scaffold + CI + Docs | ✅ |
 | M2 | Skill CRUD API + CLI | ✅ |
 | M3 | Web UI + Marketplace | ✅ |
-| M4 | User Auth + Paid Skills | 📋 |
-| M5 | Federation + Community | 📋 |
+| M4 | Self-hosted deployment (`lazy serve`) | ✅ |
+| M5 | Agent-friendly API (MCP Server) | ✅ |
+| M6 | User Auth + Paid Skills | 📋 |
+| M7 | Federation + Community | 📋 |
 
 ---
 
@@ -39,11 +42,13 @@
 |-------|-----------|
 | Frontend | Vue 3 + Vite + TypeScript + Tailwind CSS |
 | Backend | FastAPI + SQLAlchemy 2.0 |
+| MCP | FastMCP SSE Server (Agent-native tool calling) |
 | DB (dev) | SQLite (aiosqlite) |
 | DB (prod) | MySQL 8.0 (Docker) |
-| Search | Meilisearch v1.10 (Docker) |
-| CI | GitHub Actions (lint + test + CodeQL + frontend build) |
-| Deploy | systemd (API) + nginx (SPA) + Docker (infra) |
+| Search | Meilisearch v1.10 (Docker) or SQLite LIKE fallback |
+| CI | GitHub Actions (lint + test + security + secret-scan) |
+| Deploy | `lazy serve` (self-hosted) / systemd + nginx (production) |
+| License | Apache 2.0 |
 
 ---
 
@@ -59,6 +64,7 @@
 | 6 | No duplication. Pattern 3× → extract shared module. |
 | 7 | Read this file. First action every session. |
 | 8 | Regression required. Every feature needs a regression test. |
+| 9 | **Update AI_README every milestone.** Part of Definition of Done. |
 
 ## Design Philosophy (Frontend)
 
@@ -74,10 +80,18 @@ Content IS the interface.
 
 ```
 frontend/        Vue 3 SPA (pages + components)
-server/          FastAPI (models, schemas, repositories, services, routers)
-cli/             Typer CLI (lazy search, lazy install)
+server/
+  mcp/           MCP Server (FastMCP + SSE + 3 tools)
+  models/        SQLAlchemy ORM models
+  schemas/       Pydantic request/response schemas
+  repositories/  Data access layer
+  services/      Business logic + search (Meilisearch / SQLite)
+  routers/       FastAPI route handlers
+cli/             Typer CLI (lazy search, lazy install, lazy serve)
 deploy/          Docker Compose (MySQL + Meilisearch) + nginx + certs
-tests/           pytest (35 tests)
+tests/           pytest (39 tests)
+Dockerfile       Multi-stage build (Node + Python)
+.env.example     Self-hosted configuration template
 ```
 
 ## Code Conventions
@@ -87,6 +101,24 @@ tests/           pytest (35 tests)
 - **English only** — code, comments, docs, commits
 - **Conventional Commits**: `feat:` / `fix:` / `docs:` / `refactor:` / `test:` / `chore:`
 - **Test**: `PYTHONPATH=. pytest -v` (backend), `npm run build` (frontend)
+- **Version bump**: Update `__init__.py` + `pyproject.toml` + `setup.py` together
+
+## Key Patterns
+
+### Service instantiation outside FastAPI
+MCP tools run outside FastAPI's request context. Use direct service creation, not `Depends()`:
+```python
+from ..database import engine
+from ..repositories.skill import SkillRepository
+from sqlalchemy.ext.asyncio import async_sessionmaker
+
+async def _make_registry():
+    db = async_sessionmaker(engine)()
+    return SkillRegistry(SkillRepository(db), _get_search_service())
+```
+
+### Coverage exclusion
+Files requiring live server (e.g., MCP tools) are excluded via `.coveragerc`.
 
 ---
 
@@ -94,14 +126,22 @@ tests/           pytest (35 tests)
 
 | Agent | Responsibility |
 |-------|---------------|
-| omb-architect | Architecture, PR approval, planning |
-| omb-backend | FastAPI, MySQL, Meilisearch |
-| omb-cli | lazy command, pip packaging |
+| omb-architect | Architecture, PR approval, planning, milestone review |
+| omb-backend | FastAPI, MySQL, Meilisearch, MCP Server |
+| omb-cli | `lazy` command, pip packaging, version check |
 | omb-frontend | Vue 3, Tailwind, design system |
 | omb-guardian | Code review against review-rules.yml |
 
 ## Deployment
 
+### Self-hosted (`lazy serve`)
+```bash
+pip install oh-my-lazybones
+lazy serve
+# → http://localhost:9527 (REST + MCP + Web UI)
+```
+
+### Production
 ```bash
 # API update
 git pull && source .venv/bin/activate && pip install -r server/requirements.txt -q
@@ -119,6 +159,7 @@ sudo systemctl reload nginx
 - `NODE_ENV=production` on host skips devDependencies → use `NODE_ENV=development npm install`
 - DigiCert SSL cert for lazybone.club at `/etc/ssl/certs/lazybone.club.crt`
 - API cert (Let's Encrypt) auto-renews via certbot timer
+- Self-hosted mode auto-detects: SQLite if no Meilisearch, Meilisearch if configured
 
 ---
 
