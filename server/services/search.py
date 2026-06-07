@@ -89,7 +89,12 @@ class SQLiteSearchService(SearchService):
     """SQLite LIKE-based search — no external dependencies."""
 
     def __init__(self, db_url: str):
-        self.db_url = db_url
+        from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+
+        self._engine = create_async_engine(db_url, echo=False)
+        self._session_factory = async_sessionmaker(
+            self._engine, expire_on_commit=False
+        )
 
     async def ensure_index(self) -> None:
         pass  # SQLite doesn't need index setup
@@ -106,13 +111,9 @@ class SQLiteSearchService(SearchService):
     ) -> tuple[List[str], int]:
         """Search via SQL LIKE on the skills table."""
         from sqlalchemy import select, func, or_
-        from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
         from ..models.skill import Skill
 
-        engine = create_async_engine(self.db_url, echo=False)
-        session_factory = async_sessionmaker(engine, expire_on_commit=False)
-
-        async with session_factory() as session:
+        async with self._session_factory() as session:
             stmt = select(Skill)
             if query:
                 pattern = f"%{query}%"
@@ -131,12 +132,15 @@ class SQLiteSearchService(SearchService):
             total = (await session.execute(count_stmt)).scalar() or 0
 
             # Sort and paginate
-            sort_col = Skill.downloads if sort == "downloads" else Skill.created_at
-            stmt = stmt.order_by(sort_col.desc()).offset((page - 1) * limit).limit(limit)
+            sort_col = (
+                Skill.downloads if sort == "downloads" else Skill.created_at
+            )
+            stmt = stmt.order_by(sort_col.desc()).offset(
+                (page - 1) * limit
+            ).limit(limit)
             result = await session.execute(stmt)
             skills = list(result.scalars().all())
 
-        await engine.dispose()
         return [s.name for s in skills], total
 
     async def reindex_all(self, skills: List[Dict[str, Any]]) -> None:

@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from sqlalchemy import select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.skill import Skill
@@ -24,19 +24,19 @@ class SkillRepository(AbstractRepository[Skill]):
         return result.scalar_one_or_none()
 
     async def increment_downloads(self, name: str) -> None:
-        skill = await self.get_by_name(name)
-        if skill:
-            skill.downloads += 1
-            await self.session.commit()
+        await self.session.execute(
+            update(Skill)
+            .where(Skill.name == name)
+            .values(downloads=Skill.downloads + 1)
+        )
+        await self.session.commit()
 
     async def count_distinct_authors(self) -> int:
-        from sqlalchemy import func, select
         result = await self.session.execute(
             select(func.count(func.distinct(Skill.author)))
         )
         return result.scalar() or 0
 
     async def sum_downloads(self) -> int:
-        from sqlalchemy import func, select
         result = await self.session.execute(select(func.sum(Skill.downloads)))
         return result.scalar() or 0

@@ -1,10 +1,13 @@
 """oh-my-lazybones API Server."""
 
 from contextlib import asynccontextmanager
+from importlib.metadata import version as _package_version
 
 from fastapi import FastAPI
 
 from .config import settings
+
+VERSION = _package_version("oh-my-lazybones")
 
 
 @asynccontextmanager
@@ -29,22 +32,19 @@ async def lifespan(app: FastAPI):  # type: ignore[arg-type]
 
 app = FastAPI(
     title="oh-my-lazybones API",
-    version="0.1.0",
+    version=VERSION,
     lifespan=lifespan,
 )
 
 from .routers import skills, stats  # noqa: E402
+from .mcp import create_mcp_app  # noqa: E402
 
 app.include_router(skills.router)
 app.include_router(stats.router)
-
-# Mount MCP Server for Agent-native skill discovery
-from .mcp import create_mcp_app  # noqa: E402
-
 app.mount("/mcp", create_mcp_app())
 
 
 @app.get("/api/v1/health")
 async def health():
     """Health check endpoint."""
-    return {"status": "ok", "version": "0.1.0", "environment": settings.environment}
+    return {"status": "ok", "version": VERSION, "environment": settings.environment}
