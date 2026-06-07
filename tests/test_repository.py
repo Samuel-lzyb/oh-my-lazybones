@@ -38,3 +38,18 @@ class TestSkillRepository:
         await repo.delete(sample_skill)
         found = await repo.get_by_name("test-skill")
         assert found is None
+
+    async def test_increment_downloads(self, repo, sample_skill):
+        before = sample_skill.downloads
+        await repo.increment_downloads("test-skill")
+        # Re-fetch to verify
+        skill = await repo.get_by_name("test-skill")
+        assert skill.downloads == before + 1
+
+    async def test_count_distinct_authors(self, repo, sample_skill):
+        count = await repo.count_distinct_authors()
+        assert count >= 1
+
+    async def test_sum_downloads(self, repo, sample_skill):
+        total = await repo.sum_downloads()
+        assert total >= 0
