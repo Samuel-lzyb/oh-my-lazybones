@@ -6,10 +6,25 @@ on:
     paths: ['frontend/**']
 
 jobs:
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
-      - run: cd frontend && npm ci && npm run build
+
+      - uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - run: cd frontend && npm ci
+
+      - run: cd frontend && npm run test
+        continue-on-error: true
+
+      - run: cd frontend && npm run build
+
+      - run: cd frontend && npm audit --audit-level=high
