@@ -3,7 +3,7 @@ app = typer.Typer(name="lazy", help="oh-my-lazybones CLI")
 
 @app.command()
 def search(query: str):
-    """搜索技能"""
+    """Search for Agent Skills."""
     typer.echo(f"Searching for: {query}")
 
 if __name__ == "__main__":

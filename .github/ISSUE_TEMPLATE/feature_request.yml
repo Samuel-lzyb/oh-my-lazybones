@@ -1,14 +1,19 @@
 name: Feature Request
-description: 你希望 Agent 帮你做什么？
+description: What should your Agent be able to do?
+labels: [enhancement, triage]
 body:
   - type: textarea
     attributes:
-      label: 你想让 Agent 做什么？
-      description: 用自然语言描述
+      label: What do you want your Agent to do?
+      description: Describe what you want in plain English
+    validations:
+      required: true
   - type: textarea
     attributes:
-      label: 为什么现成 Skill 做不到？
+      label: Why can't existing Skills do this?
+      description: What's missing from the current Skill catalog?
   - type: textarea
     attributes:
-      label: 你期望的一键体验
-      description: lazy install xxx 之后？
+      label: Ideal one-command experience
+      description: "What happens after `lazy install your-skill`?"
+      placeholder: "lazy install weekly-report → opens config → runs on schedule"

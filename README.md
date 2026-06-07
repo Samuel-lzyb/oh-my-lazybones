@@ -1,39 +1,108 @@
 # oh-my-lazybones 🦴
 
-> Agent 技能的 GitHub —— 让"我不想做"变成"Agent 已做完"
+<p align="center">
+  <strong>The GitHub for Agent Skills — turn "I don't want to do this" into "Agent already did it."</strong>
+</p>
 
-## 安装
+<p align="center">
+  <a href="https://github.com/Samuel-lzyb/oh-my-lazybones/actions/workflows/ci.yml"><img src="https://github.com/Samuel-lzyb/oh-my-lazybones/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://pypi.org/project/lazybones"><img src="https://img.shields.io/pypi/v/lazybones" alt="PyPI"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
+</p>
+
+---
+
+## Why
+
+Everyone is building AI Agents. But there's one fundamental problem:
+
+> **"I know an Agent can do this for me — but I have no idea where to find the Skill that does it."**
+
+| What I want | Current reality | Pain |
+|-------------|-----------------|------|
+| Daily email digest to Slack | Write prompt → debug → wire MCP → deploy | 3 hours minimum |
+| Weekly training report from my watch data | Google → copy prompt → wrong data source → give up | No reusable template |
+| Auto-reply to Telegram when I'm focused | Someone built this, but where? | Fragmented ecosystem |
+| Share my Agent Skill with others | GitHub gist → nobody finds it | No distribution |
+
+oh-my-lazybones solves this: **discover, install, and share Agent Skills — like npm for Agents.**
+
+---
+
+## Quick Start
 
 ```bash
+# Install
 pip install lazybones
-```
 
-## 30秒上手
-
-```bash
+# Search for a Skill
 lazy search "email digest"
+
+# Install and run in one shot
 lazy install daily-email-digest
-# Agent 每天早上 8 点自动发邮件摘要到微信
+# → Your Agent now sends a daily email digest every morning at 8 AM
 ```
 
-## 为什么需要
+---
 
-现在每个人都在造 Agent。但有一个根本问题：
-"我知道 Agent 能帮我做事，但我不知道去哪儿找那个刚好能做的 Skill。"
+## Features
 
-oh-my-lazybones 就是解决这个问题的。
+- 🔍 **Search** — Find Agent Skills by what they do, not by filename
+- 📦 **One-command install** — `lazy install <skill>` provisions the Skill, MCP config, and cron
+- 🌍 **12 languages** — Skills can declare multilingual descriptions; CLI and Web UI follow your locale
+- 🆓 **Free & Paid** — Community Skills are free; premium Skills can charge (coming soon)
+- 🤖 **AI-native** — Skills are designed for AI Agents (MCP-compatible, self-documenting)
+- 🏠 **Self-hostable** — Run your own Skill registry with Docker Compose
 
-## 特性
+---
 
-- 🔍 搜索现成的 Agent 技能
-- 📦 一键安装，自动配置 MCP
-- 🌍 12 种语言
-- 🆓 开源免费 / 付费技能市场
+## Architecture
 
-## 参与贡献
+```
+┌──────────────────────────────────────────────┐
+│                    CLI                        │
+│  lazy search | lazy install | lazy publish   │
+└──────────────────┬───────────────────────────┘
+                   │ REST / MCP
+┌──────────────────▼───────────────────────────┐
+│              API Server (FastAPI)             │
+│  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
+│  │  Search  │  │  Skills  │  │    Auth     │  │
+│  │ Meilisearch│ │  CRUD   │  │  JWT/OAuth  │  │
+│  └──────────┘  └──────────┘  └────────────┘  │
+└──────────────────┬───────────────────────────┘
+                   │
+┌──────────────────▼───────────────────────────┐
+│           Storage Layer                       │
+│  SQLite (dev) / PostgreSQL (prod)             │
+└──────────────────────────────────────────────┘
+```
 
-见 [CONTRIBUTING.md](./CONTRIBUTING.md)
+---
+
+## Roadmap
+
+| Milestone | Focus | Status |
+|-----------|-------|--------|
+| M1 | CLI + Search + Install | 🚧 In progress |
+| M2 | Web UI + Skill publishing | 📋 Planned |
+| M3 | Paid Skills + Revenue split | 📋 Planned |
+| M4 | Federation (multi-registry) | 📋 Planned |
+| M5 | Community + Discord | 📋 Planned |
+
+---
+
+## Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and guidelines.
+
+- 🐛 [Bug reports](https://github.com/Samuel-lzyb/oh-my-lazybones/issues/new?template=bug_report.yml)
+- 💡 [Feature requests](https://github.com/Samuel-lzyb/oh-my-lazybones/issues/new?template=feature_request.yml)
+- 🔒 [Security policy](./SECURITY.md)
+
+---
 
 ## License
 
-MIT
+MIT © [Samuel-lzyb](https://github.com/Samuel-lzyb)
