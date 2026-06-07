@@ -1,0 +1,86 @@
+"""Skill business logic — orchestrates Repository + SearchService."""
+
+from typing import List, Tuple
+
+from fastapi import HTTPException, status
+
+from ..models.skill import Skill
+from ..repositories.skill import SkillRepository
+from ..schemas.skill import SkillCreate, SkillSearchParams
+from .search import SearchService
+
+
+class SkillRegistry:
+    """Business logic for skill CRUD + search."""
+
+    def __init__(self, repo: SkillRepository, search_svc: SearchService):
+        self.repo = repo
+        self._search = search_svc
+
+    async def create(self, data: SkillCreate) -> Skill:
+        existing = await self.repo.get_by_name(data.name)
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "code": "CONFLICT",
+                    "message": f"Skill '{data.name}' already exists",
+                },
+            )
+
+        skill = Skill(
+            name=data.name,
+            version=data.version,
+            author=data.author,
+            description=data.description,
+            tags=data.tags,
+        )
+        skill = await self.repo.create(skill)
+
+        # Sync to Meilisearch (best-effort)
+        try:
+            skill_dict = {c.name: getattr(skill, c.name) for c in skill.__table__.columns}
+            await self._search.index(skill_dict)
+        except Exception:
+            pass
+
+        return skill
+
+    async def search(
+        self, params: SkillSearchParams
+    ) -> Tuple[List[Skill], int]:
+        if params.q or params.tag:
+            names, total = await self._search.search(
+                params.q or "", params.tag,
+                params.sort, params.page, params.limit,
+            )
+            skills = []
+            for name in names:
+                s = await self.repo.get_by_name(name)
+                if s:
+                    skills.append(s)
+        else:
+            offset = (params.page - 1) * params.limit
+            skills = await self.repo.list_all(offset, params.limit)
+            total = await self.repo.count()
+        return skills, total
+
+    async def get_by_name(self, name: str) -> Skill:
+        skill = await self.repo.get_by_name(name)
+        if not skill:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={
+                    "code": "NOT_FOUND",
+                    "message": f"Skill '{name}' not found",
+                },
+            )
+        return skill
+
+    async def delete(self, name: str) -> None:
+        skill = await self.get_by_name(name)
+        await self.repo.delete(skill)
+        try:
+            await self._search.deindex(name)
+        except Exception:
+            pass
