@@ -33,9 +33,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-from .routers import skills  # noqa: E402
+from .routers import skills, stats  # noqa: E402
 
 app.include_router(skills.router)
+app.include_router(stats.router)
 
 
 @app.get("/api/v1/health")
