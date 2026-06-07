@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 6 seed skills on production marketplace
 - GitHub Releases for v0.1.0 and v0.2.0
 - Proper CHANGELOG.md (Keep a Changelog format)
+- **M4: Self-hosted deployment**
+  - `lazy serve` — zero-dependency server (SQLite, no Meilisearch needed)
+  - SQLiteSearchService — LIKE-based search fallback
+  - Auto-detect search backend (Meilisearch if configured, SQLite otherwise)
+  - Multi-stage Dockerfile (Node build + Python runtime)
+  - All-in-one Docker Compose with `--profile full` (API + Web + MySQL + Meilisearch)
+  - `.env.example` configuration template
 
 ### Changed
 - Python requirement lowered to 3.10+ (from 3.12)
@@ -27,11 +34,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Search doc building extracted to `_skill_to_doc()`
 - Skill model gained `to_dict()` method
 - Search method refactored with early returns
+- Self-hosted port standardized to 9527
 
 ### Fixed
 - CI regression missing `PYTHONPATH=.`
 - Favicon file permissions (403)
 - Package name changed from `lazybones` to `oh-my-lazybones`
+- labeler.yml v5 format
 
 ## [0.1.0] — 2026-06-07
 

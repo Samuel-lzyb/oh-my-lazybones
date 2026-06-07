@@ -11,8 +11,9 @@
 <p align="center">
   <a href="https://github.com/Samuel-lzyb/oh-my-lazybones/actions/workflows/ci.yml"><img src="https://github.com/Samuel-lzyb/oh-my-lazybones/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://lazybone.club"><img src="https://img.shields.io/badge/web-lazybone.club-amber" alt="Web"></a>
-  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
+  <a href="https://pypi.org/project/oh-my-lazybones/"><img src="https://img.shields.io/pypi/v/oh-my-lazybones" alt="PyPI"></a>
 </p>
 
 ---
@@ -39,13 +40,52 @@ Or browse at [lazybone.club](https://lazybone.club).
 
 ---
 
+## Self-Hosting
+
+Three ways to run your own instance — pick your level:
+
+### 🚀 Tier 1: `lazy serve` (30 seconds)
+
+Zero dependencies beyond Python 3.10. Uses SQLite.
+
+```bash
+pip install oh-my-lazybones
+lazy serve
+# → http://localhost:9527
+```
+
+### 📦 Tier 2: Docker (2 minutes)
+
+Pre-built image coming soon to `ghcr.io/samuel-lzyb/oh-my-lazybones`.
+
+```bash
+docker pull ghcr.io/samuel-lzyb/oh-my-lazybones:latest
+docker run -p 9527:9527 ghcr.io/samuel-lzyb/oh-my-lazybones:latest
+```
+
+### 🏭 Tier 3: Docker Compose (5 minutes)
+
+Full production stack with MySQL + Meilisearch.
+
+```bash
+git clone https://github.com/Samuel-lzyb/oh-my-lazybones.git
+cd oh-my-lazybones
+cp .env.example .env
+docker compose --profile full up -d
+# → http://localhost:9527
+```
+
+See `.env.example` for configuration options.
+
+---
+
 ## Features
 
 - **Search** — Find Agent Skills by what they do
 - **One-command install** — `lazy install <skill>` provisions the Skill locally
 - **Web UI** — Browse, search, and publish at lazybone.club
+- **Self-hostable** — `lazy serve`, Docker, or Docker Compose
 - **Free & Paid** — Community Skills are free; premium Skills coming
-- **Self-hostable** — Docker Compose, single-host deploy
 
 ---
 
@@ -68,8 +108,9 @@ api.lazybone.club (FastAPI)
 | M1 | Repo scaffold + CI + Docs | ✅ |
 | M2 | Skill CRUD API + CLI | ✅ |
 | M3 | Web UI + Marketplace | ✅ |
-| M4 | User Auth + Paid Skills | 📋 Next |
-| M5 | Federation + Community | 📋 Planned |
+| M4 | Self-hosted deployment | ✅ |
+| M5 | User Auth + Paid Skills | 📋 Planned |
+| M6 | Federation + Community | 📋 Planned |
 
 ---
 
