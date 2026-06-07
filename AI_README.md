@@ -12,24 +12,28 @@
 - Users install it → `lazy install daily-email-digest`
 - Their Agent runs it — every morning, automatically
 
+**Live API**: `https://api.lazybone.club/api/v1/health`
+
 ### Tech Stack
 
 | Layer | Technology | Why |
 |-------|-----------|-----|
 | CLI | Python (Typer) | `lazy` command, one-shot installs |
-| API Server | FastAPI + SQLAlchemy + aiosqlite | Async, typed, lightweight |
-| Search | Meilisearch v1.10 | Instant full-text search, self-hosted |
-| Auth | python-jose (JWT) | Stateless, standard |
+| API Server | FastAPI + SQLAlchemy 2.0 | Async, typed, lightweight |
+| Database (dev) | SQLite (aiosqlite) | Zero-config, in-memory tests |
+| Database (prod) | MySQL 8.0 | Docker container on host |
+| Search | Meilisearch v1.10 | Instant full-text search, Docker container |
 | CI/CD | GitHub Actions | Lint + Test + CodeQL + Regression |
+| Deploy | systemd + Docker Compose | API on host, infra in containers |
 
 ### Project Phase
 
-**Current: M1 (Skeleton)** — CLI + API scaffold, CI pipeline, English docs.
+**Current: M3 (Web UI + Skill Publishing)** — Starting soon.
 
 | Phase | Goal |
 |-------|------|
 | M1 | Scaffold: CLI + API + CI + Docs ✅ **Done** |
-| M2 | Functional: Search + Install Skill (CLI + API) |
+| M2 | Functional: Skill CRUD API + CLI search/install ✅ **Done** |
 | M3 | Platform: Web UI + Skill Publishing |
 | M4 | Mature: Paid Skills + Federation |
 | M5 | Community: Discord + Ecosystem |
@@ -80,23 +84,38 @@ These are **non-negotiable**. Every PR is checked against them.
 ### Structure
 ```
 server/
-├── main.py              # FastAPI app entry point
-├── routers/             # API route modules
-├── models/              # SQLAlchemy models
+├── main.py              # FastAPI app entry point + lifespan
+├── config.py            # pydantic-settings, env vars
+├── database.py          # async engine + session
+├── dependencies.py      # DI factory functions
+├── models/              # SQLAlchemy ORM models
 ├── schemas/             # Pydantic request/response schemas
-├── services/            # Business logic
+├── routers/             # API route modules
+├── services/            # Business logic + search
+├── repositories/        # Data access (AbstractRepository base)
 └── requirements.txt     # All dependencies (runtime + test)
 
 cli/
 ├── lazybones/
 │   ├── main.py          # Typer app entry point
+│   ├── client.py        # httpx async API client
 │   └── commands/        # Subcommand modules
 ├── setup.py
 └── pyproject.toml
 
+deploy/
+├── docker-compose.yml   # MySQL + Meilisearch (infra only)
+├── Dockerfile.api       # API image (backup)
+├── .env                 # Secrets (not in git)
+├── mysql/init.sql       # Schema
+└── nginx/               # Reverse proxy config
+
 tests/
-├── test_*.py            # Unit tests (mirror source structure)
-└── conftest.py          # Shared fixtures
+├── conftest.py          # Shared fixtures (in-memory SQLite + mock search)
+├── test_schema.py       # Schema validation
+├── test_repository.py   # Repository CRUD
+├── test_service.py      # Service business logic
+└── test_api.py          # API endpoints (httpx AsyncClient)
 ```
 
 ### Style
@@ -115,11 +134,9 @@ Every PR must pass:
 | Gate | Tool / Check |
 |------|-------------|
 | Lint | `ruff check server/ cli/` |
-| Type check | `mypy` (M2+) |
-| Unit tests | `pytest -v` |
-| Coverage | `pytest --cov` (M2+) |
+| Unit tests | `PYTHONPATH=. pytest -v` |
 | Security scan | CodeQL |
-| Secret scan | Git-secrets + `.env` check |
+| Secret scan | `.env` check |
 | Regression | `regression.yml` (on merge to main) |
 | AI Review | Guardian reads `.github/review-rules.yml` |
 
@@ -147,6 +164,7 @@ Every PR must pass:
 | `CONTRIBUTING.md` | Dev setup + PR process |
 | `README.md` | Public-facing project overview |
 | `CHANGELOG.md` | Release history |
+| `deploy/` | Production deployment config |
 
 ---
 
@@ -159,6 +177,13 @@ Every PR must pass:
 | **omb-cli** | `lazy` command, pip packaging, Skill installer |
 | **omb-guardian** | Code review against review-rules.yml, security gate |
 | **omb-docs** | README, API docs, CHANGELOG, AI_README updates |
+
+## Production
+
+- **API**: `https://api.lazybone.club/api/v1/health`
+- **Manage**: `sudo systemctl restart lazybones-api`
+- **Infra**: `cd ~/oh-my-lazybones/deploy && docker compose restart`
+- **Deploy flow**: merge to main → git pull → `systemctl restart lazybones-api`
 
 ---
 
