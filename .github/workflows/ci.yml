@@ -25,7 +25,7 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r server/requirements.txt
       - run: pip install -e cli/
-      - run: pytest --cov=lazybones --cov-report=term -v
+      - run: PYTHONPATH=. pytest --cov-report=term -v
         env:
           MEILI_URL: http://localhost:7700
           MEILI_KEY: test-key
