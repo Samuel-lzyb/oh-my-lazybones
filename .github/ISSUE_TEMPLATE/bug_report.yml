@@ -1,0 +1,24 @@
+name: Bug Report
+description: 报告一个 bug
+body:
+  - type: input
+    attributes:
+      label: 环境
+      description: OS / Python 版本 / lazy 版本
+      placeholder: "macOS 14.5, Python 3.12, lazy 0.1.0"
+  - type: textarea
+    attributes:
+      label: 预期行为
+      description: 你期望发生什么？
+  - type: textarea
+    attributes:
+      label: 实际行为
+      description: 发生了什么？
+  - type: textarea
+    attributes:
+      label: 复现步骤
+      description: 粘贴可执行的命令序列
+      placeholder: "1. lazy search email\n2. lazy install xxx\n3. ..."
+  - type: textarea
+    attributes:
+      label: 日志/截图

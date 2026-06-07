@@ -1,0 +1,32 @@
+# 敏感配置
+.env
+.env.local
+.env.*.local
+*.override.yml
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 日志
+*.log
+nohup.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 运行时
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+
+# 证书
+*.pem
+*.key
+*.crt
