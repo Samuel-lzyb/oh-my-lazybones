@@ -65,6 +65,7 @@
 | 7 | Read this file. First action every session. |
 | 8 | Regression required. Every feature needs a regression test. |
 | 9 | **Update AI_README every milestone.** Part of Definition of Done. |
+| 10 | **Update GitHub metadata every release.** About, topics, Releases, tags — must reflect current state. Stale metadata = broken first impression. |
 
 ## Design Philosophy (Frontend)
 
@@ -104,6 +105,19 @@ Dockerfile       Multi-stage build (Node + Python)
 - **Version bump**: Update `__init__.py` + `pyproject.toml` + `setup.py` together
 
 ## Key Patterns
+
+### GitHub Metadata Checklist (per Iron Law #10)
+
+Every release MUST verify:
+
+| Check | Command |
+|-------|---------|
+| **About** description matches README | `gh api repos/:owner/:repo --jq .description` |
+| **About** topics include current tech | `gh api repos/:owner/:repo --jq .topics` |
+| **Releases** latest = current version | `gh release list --limit 3` |
+| **Releases** no stale drafts | `gh api repos/:owner/:repo/releases --jq '.[] \| select(.draft==true)'` |
+| **Tags** match PyPI version | `git tag -l \| sort -V` vs `pip index versions oh-my-lazybones` |
+| **License** matches LICENSE file | `gh api repos/:owner/:repo --jq .license.spdx_id` |
 
 ### Service instantiation outside FastAPI
 MCP tools run outside FastAPI's request context. Use direct service creation, not `Depends()`:
