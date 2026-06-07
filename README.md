@@ -58,7 +58,7 @@ lazy serve
 
 ### 📦 Tier 2: Docker (2 minutes)
 
-Pre-built image coming soon to `ghcr.io/samuel-lzyb/oh-my-lazybones`.
+Pre-built image at `ghcr.io/samuel-lzyb/oh-my-lazybones`.
 
 ```bash
 docker pull ghcr.io/samuel-lzyb/oh-my-lazybones:latest
@@ -133,8 +133,8 @@ Available tools: `search_skills`, `install_skill`, `list_categories`.
 
 ```
 lazybone.club (Vue 3 SPA)
-  │ REST /api/v1
-api.lazybone.club (FastAPI)
+  │ REST /api/v1   │ SSE /mcp/sse (Agent-native)
+api.lazybone.club (FastAPI + MCP Server)
   ├─ MySQL 8.0
   └─ Meilisearch v1.10
 ```
@@ -149,7 +149,7 @@ api.lazybone.club (FastAPI)
 | M2 | Skill CRUD API + CLI | ✅ |
 | M3 | Web UI + Marketplace | ✅ |
 | M4 | Self-hosted deployment | ✅ |
-| M5 | Agent-friendly API | 📋 Planned |
+| M5 | Agent-friendly API | ✅ |
 | M6 | User Auth + Paid Skills | 📋 Planned |
 | M7 | Federation + Community | 📋 Planned |
 
