@@ -1,8 +1,25 @@
 [project]
-name = "lazybones"
+name = "oh-my-lazybones"
 version = "0.1.0"
+description = "The marketplace for Agent Skills — discover, install, and share"
+readme = "README.md"
 requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Samuel-lzyb", email = "lzymaster@lazybone.club" }]
+keywords = ["agent", "skills", "mcp", "cli", "ai-agents", "marketplace"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+]
 dependencies = ["typer", "httpx", "pyyaml"]
+
+[project.urls]
+Homepage = "https://lazybone.club"
+Repository = "https://github.com/Samuel-lzyb/oh-my-lazybones"
 
 [project.scripts]
 lazy = "lazybones.main:main"

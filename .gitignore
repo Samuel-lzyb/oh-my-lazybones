@@ -33,3 +33,5 @@ node_modules/
 cli/lazybones.egg-info/
 node_modules/
 frontend/dist/
+cli/dist/
+cli/oh_my_lazybones.egg-info/
