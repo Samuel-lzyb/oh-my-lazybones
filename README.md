@@ -109,8 +109,9 @@ api.lazybone.club (FastAPI)
 | M2 | Skill CRUD API + CLI | ✅ |
 | M3 | Web UI + Marketplace | ✅ |
 | M4 | Self-hosted deployment | ✅ |
-| M5 | User Auth + Paid Skills | 📋 Planned |
-| M6 | Federation + Community | 📋 Planned |
+| M5 | Agent-friendly API | 📋 Planned |
+| M6 | User Auth + Paid Skills | 📋 Planned |
+| M7 | Federation + Community | 📋 Planned |
 
 ---
 
