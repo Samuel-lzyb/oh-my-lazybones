@@ -30,7 +30,7 @@ oh-my-lazybones solves this: **discover, install, and share Agent Skills — lik
 ## Quick Start
 
 ```bash
-pip install lazybones
+pip install oh-my-lazybones
 lazy search "email digest"
 lazy install daily-email-digest
 ```
