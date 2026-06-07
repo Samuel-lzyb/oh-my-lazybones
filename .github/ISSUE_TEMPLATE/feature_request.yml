@@ -1,0 +1,14 @@
+name: Feature Request
+description: 你希望 Agent 帮你做什么？
+body:
+  - type: textarea
+    attributes:
+      label: 你想让 Agent 做什么？
+      description: 用自然语言描述
+  - type: textarea
+    attributes:
+      label: 为什么现成 Skill 做不到？
+  - type: textarea
+    attributes:
+      label: 你期望的一键体验
+      description: lazy install xxx 之后？
