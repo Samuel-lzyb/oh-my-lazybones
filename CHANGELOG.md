@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-06-07
+
+### Added
+- **M5: MCP Server** — Agent-native skill discovery via SSE
+  - `search_skills` tool — programmatic skill search
+  - `install_skill` tool — programmatic skill installation
+  - `list_categories` tool — discover available categories
+  - Mounted at `/mcp/sse` on every deployment (REST + `lazy serve`)
+- README: "For Agents" section with Python + TypeScript examples
+
+### Changed
+- License: MIT → Apache 2.0 (patent grant + attribution + trademark protection)
+- Roadmap updated: M5 = Agent-friendly API, M6 = Auth, M7 = Federation
+
 ## [0.2.0] — 2026-06-07
 
 ### Added

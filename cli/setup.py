@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name="oh-my-lazybones",
-    version="0.2.1",
+    version="0.3.0",
     packages=find_packages(),
     install_requires=["typer", "httpx", "pyyaml"],
     entry_points={
