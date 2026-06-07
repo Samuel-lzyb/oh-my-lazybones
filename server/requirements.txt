@@ -5,3 +5,5 @@ aiosqlite>=0.20.0
 meilisearch>=0.31.0
 pydantic>=2.0.0
 python-jose>=3.3.0
+pytest>=8.0
+pytest-cov>=5.0
