@@ -1,24 +1,37 @@
 name: Bug Report
-description: 报告一个 bug
+description: Report a bug
+labels: [bug, triage]
 body:
   - type: input
     attributes:
-      label: 环境
-      description: OS / Python 版本 / lazy 版本
+      label: Environment
+      description: OS / Python version / lazy version
       placeholder: "macOS 14.5, Python 3.12, lazy 0.1.0"
+    validations:
+      required: true
   - type: textarea
     attributes:
-      label: 预期行为
-      description: 你期望发生什么？
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
   - type: textarea
     attributes:
-      label: 实际行为
-      description: 发生了什么？
+      label: Actual Behavior
+      description: What actually happened?
+    validations:
+      required: true
   - type: textarea
     attributes:
-      label: 复现步骤
-      description: 粘贴可执行的命令序列
-      placeholder: "1. lazy search email\n2. lazy install xxx\n3. ..."
+      label: Steps to Reproduce
+      description: Paste exact commands to reproduce the issue
+      placeholder: |
+        1. lazy search "email"
+        2. lazy install daily-digest
+        3. ...
+    validations:
+      required: true
   - type: textarea
     attributes:
-      label: 日志/截图
+      label: Logs / Screenshots
+      description: Any relevant logs or screenshots
