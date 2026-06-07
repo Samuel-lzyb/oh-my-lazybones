@@ -25,7 +25,7 @@ jobs:
           pip install -e cli/
 
       - name: Run full test suite
-        run: pytest -v --tb=short
+        run: PYTHONPATH=. pytest -v --tb=short
         env:
           MEILI_URL: http://localhost:7700
           MEILI_KEY: test-key
