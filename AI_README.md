@@ -1,5 +1,9 @@
 # AI_README.md — Agent Onboarding
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Samuel-lzyb/oh-my-lazybones/main/assets/logo.svg" alt="lazybones sloth logo" width="72" />
+</p>
+
 > **Read this first.** Every AI Agent must read this before touching any code.
 
 ---

@@ -1,6 +1,10 @@
 # oh-my-lazybones
 
 <p align="center">
+  <img src="https://raw.githubusercontent.com/Samuel-lzyb/oh-my-lazybones/main/assets/logo.svg" alt="lazybones sloth logo" width="96" />
+</p>
+
+<p align="center">
   <strong>The marketplace for Agent Skills — discover, install, and share.</strong>
 </p>
 
