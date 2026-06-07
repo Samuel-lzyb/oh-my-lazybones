@@ -1,0 +1,108 @@
+name: AI PR Review
+on:
+  pull_request:
+    types: [opened, synchronize]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  # ── Phase 1: Automated Checks (CI-native) ──────────────
+  auto-checks:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read review rules
+        id: rules
+        run: |
+          if [ -f .github/review-rules.yml ]; then
+            PHASE=$(grep '^phase:' .github/review-rules.yml | awk '{print $2}')
+            echo "phase=$PHASE" >> $GITHUB_OUTPUT
+            echo "Current review phase: $PHASE"
+          else
+            echo "phase=m1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check PR size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const totalChanges = files.reduce((sum, f) => sum + f.changes, 0);
+            const fileCount = files.length;
+
+            let warning = '';
+            if (totalChanges > 500) {
+              warning = `⚠️ **Large PR**: ${totalChanges} lines across ${fileCount} files. Consider splitting into smaller PRs for easier review.`;
+            }
+            if (fileCount > 20) {
+              warning = `⚠️ **Many files**: ${fileCount} files changed. This may be hard to review thoroughly.`;
+            }
+
+            if (warning) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: warning
+              });
+            }
+
+            // Set outputs for the next step
+            core.setOutput('total_changes', totalChanges);
+            core.setOutput('file_count', fileCount);
+
+      - name: AI review payload
+        id: payload
+        run: |
+          PAYLOAD=$(jq -nc \
+            --arg event "pr_${{ github.event.action }}" \
+            --arg phase "${{ steps.rules.outputs.phase }}" \
+            --argjson pr '${{ toJson(github.event.pull_request) }}' \
+            '{event: $event, phase: $phase, repo: "${{ github.repository }}", pr: $pr}')
+          echo "payload<<EOF" >> $GITHUB_OUTPUT
+          echo "$PAYLOAD" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Trigger Hermes AI review
+        if: env.HERMES_WEBHOOK_URL != ''
+        run: |
+          curl -s -X POST "${HERMES_WEBHOOK_URL}" \
+            -H "Content-Type: application/json" \
+            -d '${{ steps.payload.outputs.payload }}' \
+          || echo "AI review skipped (webhook unreachable)"
+
+  # ── Phase 2: Summary Comment ───────────────────────────
+  summarize:
+    needs: auto-checks
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Post review context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## 🤖 AI Review Triggered
+
+            **Review Phase:** \`m1\` — Basic quality gates
+            **Checks:** Code existence · Tests present · CI green · No secrets committed · English only
+
+            > The AI will review this PR against the current phase rules defined in [.github/review-rules.yml](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/.github/review-rules.yml).
+            > Review rules evolve with the project — to change the phase or criteria, edit that file.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });

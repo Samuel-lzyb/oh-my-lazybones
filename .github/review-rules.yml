@@ -1,0 +1,77 @@
+# Review Rules — evolves with the project
+#
+# This file controls the strictness and scope of AI code review.
+# Change `phase` as the project matures. The PR review workflow
+# reads this file and applies the corresponding rule set.
+#
+# Updating this file is a normal PR — no separate config system.
+
+phase: m1  # m1 | m2 | m3 | m4
+
+rules:
+  # ── M1: Skeleton Phase (current) ──────────────────────
+  # Focus: "Does it exist?" Basic quality gates.
+  m1:
+    - id: not-a-stub
+      description: "Code is functional, not just a placeholder"
+      severity: error
+    - id: has-tests
+      description: "New functionality has at least one test"
+      severity: error
+    - id: ci-green
+      description: "CI passes (lint + test + security)"
+      severity: error
+    - id: no-secrets
+      description: "No API keys, tokens, or passwords in code"
+      severity: error
+    - id: english-only
+      description: "All code, comments, docs are in English"
+      severity: warning
+
+  # ── M2: Feature Phase ─────────────────────────────────
+  # Focus: "Is it good?" API design, documentation.
+  m2:
+    - id: api-consistency
+      description: "New endpoints follow existing patterns (naming, errors, pagination)"
+      severity: error
+    - id: docs-synced
+      description: "README / CONTRIBUTING updated if API changes"
+      severity: error
+    - id: type-hints
+      description: "All public functions have type hints"
+      severity: warning
+    - id: error-handling
+      description: "Edge cases handled (empty input, network failure, auth error)"
+      severity: warning
+
+  # ── M3: Scale Phase ───────────────────────────────────
+  # Focus: "Is it stable?" Performance, compatibility.
+  m3:
+    - id: no-breaking-change
+      description: "No breaking changes without deprecation notice"
+      severity: error
+    - id: performance-regression
+      description: "No significant perf regression (check benchmarks)"
+      severity: error
+    - id: migration-guide
+      description: "Breaking changes include migration guide"
+      severity: warning
+    - id: db-migration-safe
+      description: "Schema changes are backward-compatible or have migration script"
+      severity: error
+
+  # ── M4: Mature Phase ──────────────────────────────────
+  # Focus: "Is it complete?" Security, i18n, edge cases.
+  m4:
+    - id: security-audit
+      description: "No OWASP Top 10 vulnerabilities"
+      severity: error
+    - id: i18n-coverage
+      description: "User-facing strings covered by i18n"
+      severity: warning
+    - id: a11y-check
+      description: "Web UI passes basic accessibility checks"
+      severity: warning
+    - id: dependency-review
+      description: "New dependencies reviewed for license, maintenance, size"
+      severity: error
