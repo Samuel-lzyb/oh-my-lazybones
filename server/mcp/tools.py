@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from ..database import engine
 from ..dependencies import get_search_service
 from ..repositories.skill import SkillRepository
-from ..schemas.skill import SkillSearchParams
+from ..schemas.skill import SkillCreate, SkillSearchParams
 from ..services.skill_registry import SkillRegistry
 
 
@@ -39,13 +39,15 @@ async def _make_registry() -> SkillRegistry:
 def register_tools(mcp: FastMCP) -> None:
     """Register all MCP tools on the given FastMCP instance."""
 
+    # ── Discovery ──
+
     @mcp.tool()
     async def search_skills(
         query: str,
         tags: list[str] | None = None,
         limit: int = 10,
     ) -> list[dict]:
-        """Search for Agent Skills by keyword."""
+        """Search for Agent Skills by keyword. Returns matching skills with metadata."""
         registry = await _make_registry()
         params = SkillSearchParams(
             q=query,
@@ -57,18 +59,18 @@ def register_tools(mcp: FastMCP) -> None:
         return [_skill_to_dict(s) for s in results]
 
     @mcp.tool()
-    async def install_skill(name: str) -> dict:
-        """Install a Skill by name."""
+    async def get_skill(name: str) -> dict:
+        """Get full details of a single Skill by name."""
         registry = await _make_registry()
         try:
             skill = await registry.get_by_name(name)
         except HTTPException:
-            return {"status": "error", "message": f"Skill '{name}' not found"}
-        return {"status": "installed", **_skill_to_dict(skill)}
+            raise ValueError(f"Skill '{name}' not found")
+        return _skill_to_dict(skill)
 
     @mcp.tool()
     async def list_categories() -> dict:
-        """List all available Skill categories (tags)."""
+        """List all available Skill categories (tags) across the marketplace."""
         registry = await _make_registry()
         params = SkillSearchParams(
             q=None, tag=None, sort="downloads", limit=100
@@ -81,3 +83,56 @@ def register_tools(mcp: FastMCP) -> None:
                 tags_set.add(t)
 
         return {"categories": sorted(tags_set)}
+
+    # ── Lifecycle ──
+
+    @mcp.tool()
+    async def install_skill(name: str) -> dict:
+        """Install a Skill by name. Returns skill metadata on success."""
+        registry = await _make_registry()
+        try:
+            skill = await registry.get_by_name(name)
+        except HTTPException:
+            raise ValueError(f"Skill '{name}' not found")
+        return {"action": "installed", **_skill_to_dict(skill)}
+
+    @mcp.tool()
+    async def remove_skill(name: str) -> dict:
+        """Remove/uninstall a Skill by name. Returns confirmation."""
+        registry = await _make_registry()
+        try:
+            await registry.delete(name)
+        except HTTPException:
+            raise ValueError(f"Skill '{name}' not found")
+        return {"action": "removed", "name": name}
+
+    @mcp.tool()
+    async def publish_skill(
+        name: str,
+        version: str = "0.1.0",
+        author: str = "",
+        description: str = "",
+        tags: list[str] | None = None,
+    ) -> dict:
+        """Publish a new Skill to the marketplace.
+
+        Args:
+            name: Skill name (lowercase, hyphens, 3-64 chars)
+            version: Semver version string (default "0.1.0")
+            author: Author identifier
+            description: Short description of what the Skill does
+            tags: Optional list of category tags
+        """
+        registry = await _make_registry()
+        data = SkillCreate(
+            name=name,
+            version=version,
+            author=author,
+            description=description,
+            tags=tags or [],
+        )
+        try:
+            skill = await registry.create(data)
+        except HTTPException as e:
+            raise ValueError(str(e.detail))
+        return {"action": "published", **_skill_to_dict(skill)}

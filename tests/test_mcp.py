@@ -1,15 +1,15 @@
-"""Tests for MCP Server module — Agent-native skill discovery."""
+"""Tests for MCP Server module — unit + integration smoke tests."""
 
 import pytest
 
 
 def test_mcp_module_imports():
-    """T0: MCP module imports without errors."""
+    """MCP module imports without errors."""
     from server.mcp import create_mcp_app  # noqa: F401
 
 
 def test_mcp_app_creates():
-    """T0: create_mcp_app returns a valid ASGI app."""
+    """create_mcp_app returns a valid ASGI app."""
     from server.mcp import create_mcp_app
 
     app = create_mcp_app()
@@ -18,20 +18,27 @@ def test_mcp_app_creates():
 
 
 def test_mcp_tools_register():
-    """T0: Tools register without errors."""
+    """All 6 tools register without errors."""
     from mcp.server.fastmcp import FastMCP
 
     from server.mcp.tools import register_tools
 
     mcp = FastMCP("test")
     register_tools(mcp)
-    # Verify tools are registered by checking the tool store
-    assert len(mcp._tool_manager._tools) == 3
+    tool_names = {t.name for t in mcp._tool_manager._tools.values()}
+    assert tool_names == {
+        "search_skills",
+        "get_skill",
+        "list_categories",
+        "install_skill",
+        "remove_skill",
+        "publish_skill",
+    }
 
 
 def test_mcp_endpoint_mounted():
-    """T11: /mcp route is mounted on FastAPI app."""
+    """/mcp route is mounted on FastAPI app."""
     from server.main import app
 
-    routes = [r.path for r in app.routes]
+    routes = [r.path for r in app.routes if hasattr(r, "path")]
     assert any("/mcp" in r for r in routes)
