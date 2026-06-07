@@ -1,5 +1,7 @@
 # oh-my-lazybones
 
+<p align="center"><em>Laziness, automated.</em></p>
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/Samuel-lzyb/oh-my-lazybones/main/assets/logo.svg" alt="lazybones sloth logo" width="96" />
 </p>

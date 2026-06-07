@@ -36,3 +36,4 @@ frontend/dist/
 cli/dist/
 cli/oh_my_lazybones.egg-info/
 cli/lazybones/frontend_dist/
+.coverage
