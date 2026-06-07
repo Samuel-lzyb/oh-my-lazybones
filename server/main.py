@@ -11,10 +11,18 @@ from .config import settings
 async def lifespan(app: FastAPI):  # type: ignore[arg-type]
     """Startup: create tables, init search index. Shutdown: no-op."""
     from .database import engine
-    from .models import Base  # noqa: F811 — imported here to avoid circular import
+    from .dependencies import get_search_service
+    from .models import Base
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    # Initialize Meilisearch index (best-effort, won't block startup)
+    try:
+        search = get_search_service()
+        await search.ensure_index()
+    except Exception:
+        pass  # Meilisearch unavailable — search will be a no-op
 
     yield
 
@@ -24,6 +32,10 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+from .routers import skills  # noqa: E402
+
+app.include_router(skills.router)
 
 
 @app.get("/api/v1/health")
