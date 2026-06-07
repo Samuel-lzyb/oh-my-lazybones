@@ -38,3 +38,15 @@ class Skill(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), onupdate=func.now()
     )
+
+    def to_dict(self) -> dict:
+        """Convert to plain dict for serialization / search indexing."""
+        return {
+            "name": self.name,
+            "version": self.version,
+            "author": self.author,
+            "description": self.description,
+            "tags": self.tags or [],
+            "downloads": self.downloads or 0,
+            "created_at": str(self.created_at) if self.created_at else "",
+        }

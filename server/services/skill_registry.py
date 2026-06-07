@@ -39,8 +39,7 @@ class SkillRegistry:
 
         # Sync to Meilisearch (best-effort)
         try:
-            skill_dict = {c.name: getattr(skill, c.name) for c in skill.__table__.columns}
-            await self._search.index(skill_dict)
+            await self._search.index(skill.to_dict())
         except Exception:
             pass
 
@@ -50,19 +49,29 @@ class SkillRegistry:
         self, params: SkillSearchParams
     ) -> Tuple[List[Skill], int]:
         if params.q or params.tag:
-            names, total = await self._search.search(
-                params.q or "", params.tag,
-                params.sort, params.page, params.limit,
-            )
-            skills = []
-            for name in names:
-                s = await self.repo.get_by_name(name)
-                if s:
-                    skills.append(s)
-        else:
-            offset = (params.page - 1) * params.limit
-            skills = await self.repo.list_all(offset, params.limit)
-            total = await self.repo.count()
+            return await self._search_with_meili(params)
+        return await self._list_from_db(params)
+
+    async def _search_with_meili(
+        self, params: SkillSearchParams
+    ) -> Tuple[List[Skill], int]:
+        names, total = await self._search.search(
+            params.q or "", params.tag,
+            params.sort, params.page, params.limit,
+        )
+        skills = []
+        for name in names:
+            s = await self.repo.get_by_name(name)
+            if s:
+                skills.append(s)
+        return skills, total
+
+    async def _list_from_db(
+        self, params: SkillSearchParams
+    ) -> Tuple[List[Skill], int]:
+        offset = (params.page - 1) * params.limit
+        skills = await self.repo.list_all(offset, params.limit)
+        total = await self.repo.count()
         return skills, total
 
     async def get_by_name(self, name: str) -> Skill:
