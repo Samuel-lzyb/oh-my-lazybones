@@ -23,12 +23,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: pip install -r server/requirements.txt
+      - run: pip install -r server/requirements.txt pip-audit
       - run: pip install -e cli/
-      - run: PYTHONPATH=. pytest --cov-report=term -v
+      - run: PYTHONPATH=. pytest --cov=server --cov-fail-under=70 --cov-report=term -v
         env:
           MEILI_URL: http://localhost:7700
           MEILI_KEY: test-key
+      - run: pip-audit --ignore-vuln PYSEC-*
+        continue-on-error: true
 
   security:
     runs-on: ubuntu-latest

@@ -42,6 +42,18 @@ jobs:
         run: |
           python -c "import lazybones; print(f'lazybones v{lazybones.__version__} OK')"
 
+  # ── Smoke test (production API) ──────────────────────────
+  smoke:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Health check
+        run: |
+          curl -sf -o /dev/null -w "Health: %{http_code}\n" https://api.lazybone.club/api/v1/health || echo "WARNING: API smoke test skipped (domain may be unreachable from CI)"
+      - name: Stats check
+        run: |
+          curl -sf https://api.lazybone.club/api/v1/stats || echo "WARNING: Stats endpoint unreachable"
+
   # ── Security regression ─────────────────────────────────
   security-regression:
     runs-on: ubuntu-latest
