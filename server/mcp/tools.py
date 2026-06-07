@@ -8,39 +8,32 @@ from fastapi import HTTPException
 from mcp.server.fastmcp import FastMCP
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from ..config import settings
 from ..database import engine
+from ..dependencies import get_search_service
 from ..repositories.skill import SkillRepository
 from ..schemas.skill import SkillSearchParams
-from ..services.search import MeilisearchService, SQLiteSearchService, SearchService
 from ..services.skill_registry import SkillRegistry
 
-_search_service: SearchService | None = None
 
-
-def _get_search_service() -> SearchService:
-    global _search_service
-    if _search_service is None:
-        meili_url = settings.meili_url
-        if meili_url and meili_url.startswith("http"):
-            try:
-                _search_service = MeilisearchService(
-                    meili_url, settings.meili_master_key
-                )
-            except Exception:
-                _search_service = SQLiteSearchService(settings.database_url)
-        else:
-            _search_service = SQLiteSearchService(settings.database_url)
-    return _search_service
+def _skill_to_dict(skill) -> dict:
+    """Serialize a Skill ORM object to dict for MCP tool responses."""
+    return {
+        "name": skill.name,
+        "version": skill.version,
+        "author": skill.author,
+        "description": skill.description,
+        "tags": skill.tags or [],
+        "downloads": skill.downloads or 0,
+    }
 
 
 async def _make_registry() -> SkillRegistry:
-    """Create a SkillRegistry with its own DB session."""
+    """Create a SkillRegistry with its own short-lived DB session."""
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
-    db = session_factory()
-    repo = SkillRepository(db)
-    search = _get_search_service()
-    return SkillRegistry(repo, search)
+    async with session_factory() as db:
+        repo = SkillRepository(db)
+        search = get_search_service()
+        return SkillRegistry(repo, search)
 
 
 def register_tools(mcp: FastMCP) -> None:
@@ -61,17 +54,7 @@ def register_tools(mcp: FastMCP) -> None:
             limit=limit,
         )
         results, _total = await registry.search(params)
-        return [
-            {
-                "name": s.name,
-                "version": s.version,
-                "author": s.author,
-                "description": s.description,
-                "tags": s.tags or [],
-                "downloads": s.downloads or 0,
-            }
-            for s in results
-        ]
+        return [_skill_to_dict(s) for s in results]
 
     @mcp.tool()
     async def install_skill(name: str) -> dict:
@@ -81,15 +64,7 @@ def register_tools(mcp: FastMCP) -> None:
             skill = await registry.get_by_name(name)
         except HTTPException:
             return {"status": "error", "message": f"Skill '{name}' not found"}
-
-        return {
-            "status": "installed",
-            "name": skill.name,
-            "version": skill.version,
-            "author": skill.author,
-            "description": skill.description,
-            "tags": skill.tags or [],
-        }
+        return {"status": "installed", **_skill_to_dict(skill)}
 
     @mcp.tool()
     async def list_categories() -> dict:
