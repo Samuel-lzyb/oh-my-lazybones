@@ -1,43 +1,52 @@
 # Changelog
 
-## [0.2.0] - 2026-06-07
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.2.0] — 2026-06-07
 
 ### Added
-- **Web UI**: Vue 3 + Vite + Tailwind CSS dark-mode marketplace
-  - Home page with search, stats, popular/recent skill cards
-  - Search page with infinite scroll and sort options
-  - Skill detail page with copy-to-clipboard install command
-  - Publish page with live preview
-  - Responsive layout (mobile/tablet/desktop)
-  - Mobile bottom navigation bar
-- **Design system**: Chill Geek brand (amber on deep dark, Outfit/Inter fonts, no emojis)
-- `/api/v1/stats` endpoint (skills count, authors, total installs)
-- Frontend CI workflow (`frontend-ci.yml`)
-- DigiCert SSL certificate for lazybone.club
+- Vue 3 SPA (Home, Search, Skill Detail, Publish pages)
+- Chill-Geek dark-mode design system
+- Responsive layout (mobile/tablet/desktop)
+- Auto-label PR workflow
+- Test coverage gate (70% threshold)
+- Dependency audit (pip-audit, npm audit)
+- Production API smoke test in regression
+- Hermes cron jobs: issue patrol, stale manager, weekly digest
+- 6 seed skills on production marketplace
+- GitHub Releases for v0.1.0 and v0.2.0
+- Proper CHANGELOG.md (Keep a Changelog format)
 
 ### Changed
-- Nginx config: lazybone.club serves Vue SPA, `/api/` proxies to FastAPI
-- Review rules: english-only upgraded to error-level, added design-before-code and test-spec-before-code rules
+- Python requirement lowered to 3.10+ (from 3.12)
+- Review rules phase bumped to m2
+- Stats router uses Repository instead of raw SQL
+- Search doc building extracted to `_skill_to_doc()`
+- Skill model gained `to_dict()` method
+- Search method refactored with early returns
 
-## [0.1.0] - 2026-06-07
+### Fixed
+- CI regression missing `PYTHONPATH=.`
+- Favicon file permissions (403)
+- Package name changed from `lazybones` to `oh-my-lazybones`
+
+## [0.1.0] — 2026-06-07
 
 ### Added
-- FastAPI server skeleton with health check endpoint
-- CLI skeleton (`lazy` command) with subcommand routing
-- CI pipeline: lint (ruff), test (pytest), security (CodeQL), secret scanning
-- Issue templates (bug report, feature request)
-- Pull request template with AI self-review checklist
-- Branch protection rules on `main`
-- CODE_OF_CONDUCT.md, SECURITY.md, CONTRIBUTING.md
-- MIT license
-- Skill CRUD API (POST/GET list/GET detail/DELETE)
-- `lazy search` and `lazy install` CLI commands
+- FastAPI server with health check
+- Skill CRUD API (4 endpoints)
+- CLI (`lazy search`, `lazy install`) published on PyPI
 - Meilisearch integration with abstract SearchService
-- Repository pattern (AbstractRepository base class)
+- Repository pattern with generic base class
 - 35 tests (schema, repository, service, API)
-- Production deployment: systemd + nginx + Docker (MySQL + Meilisearch)
-- Let's Encrypt SSL for api.lazybone.club
-- Review rules framework (M1→M4 phased)
+- 4-job CI pipeline (lint, test, security, secret-scan)
+- Issue and PR templates
+- Branch protection on main
+- Review rules framework (M1-M4 phases)
+- Production deployment: systemd + nginx + Docker
 
 [0.2.0]: https://github.com/Samuel-lzyb/oh-my-lazybones/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Samuel-lzyb/oh-my-lazybones/releases/tag/v0.1.0
