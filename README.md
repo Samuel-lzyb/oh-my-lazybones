@@ -86,6 +86,44 @@ See `.env.example` for configuration options.
 - **Web UI** — Browse, search, and publish at lazybone.club
 - **Self-hostable** — `lazy serve`, Docker, or Docker Compose
 - **Free & Paid** — Community Skills are free; premium Skills coming
+- **Agent-native** — MCP Server endpoint for programmatic discovery
+
+---
+
+## For Agents
+
+Connect any MCP-compatible Agent to discover Skills programmatically:
+
+```python
+from mcp import ClientSession
+from mcp.client.sse import sse_client
+
+async with sse_client("http://localhost:9527/mcp/sse") as (read, write):
+    async with ClientSession(read, write) as session:
+        await session.initialize()
+
+        # Search for Skills
+        result = await session.call_tool("search_skills", {"query": "image"})
+
+        # Install a Skill
+        await session.call_tool("install_skill", {"name": "comfyui-skill"})
+```
+
+```typescript
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+
+const client = new Client({ name: "my-agent", version: "1.0.0" });
+await client.connect(new SSEClientTransport(
+  new URL("http://localhost:9527/mcp/sse")
+));
+const result = await client.callTool({
+  name: "search_skills",
+  arguments: { query: "email digest" }
+});
+```
+
+Available tools: `search_skills`, `install_skill`, `list_categories`.
 
 ---
 

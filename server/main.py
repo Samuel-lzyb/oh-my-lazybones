@@ -38,6 +38,11 @@ from .routers import skills, stats  # noqa: E402
 app.include_router(skills.router)
 app.include_router(stats.router)
 
+# Mount MCP Server for Agent-native skill discovery
+from .mcp import create_mcp_app  # noqa: E402
+
+app.mount("/mcp", create_mcp_app())
+
 
 @app.get("/api/v1/health")
 async def health():
