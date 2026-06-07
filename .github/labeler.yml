@@ -1,6 +1,12 @@
-frontend: frontend/**/*
-backend: server/**/*
-cli: cli/**/*
-docs: "*.md"
-ci: .github/**/*
-deploy: deploy/**/*
+frontend:
+  - frontend/**/*
+backend:
+  - server/**/*
+cli:
+  - cli/**/*
+docs:
+  - "*.md"
+ci:
+  - .github/**/*
+deploy:
+  - deploy/**/*
