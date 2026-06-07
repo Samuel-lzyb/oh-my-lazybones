@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries",
 ]
-dependencies = ["typer", "httpx", "pyyaml"]
+dependencies = ["typer", "httpx", "pyyaml", "uvicorn"]
 
 [project.urls]
 Homepage = "https://lazybone.club"
@@ -27,3 +27,6 @@ lazy = "lazybones.main:main"
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+lazybones = ["frontend_dist/**/*"]

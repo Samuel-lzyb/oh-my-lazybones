@@ -83,3 +83,61 @@ class MeilisearchService(SearchService):
         docs = [self._skill_to_doc(s) for s in skills]
         if docs:
             self.client.index(INDEX_NAME).add_documents(docs)
+
+
+class SQLiteSearchService(SearchService):
+    """SQLite LIKE-based search — no external dependencies."""
+
+    def __init__(self, db_url: str):
+        self.db_url = db_url
+
+    async def ensure_index(self) -> None:
+        pass  # SQLite doesn't need index setup
+
+    async def index(self, skill: Dict[str, Any]) -> None:
+        pass  # SQLite stores skill in main table, no reindex needed
+
+    async def deindex(self, name: str) -> None:
+        pass
+
+    async def search(
+        self, query: str, tag: str | None,
+        sort: str, page: int, limit: int,
+    ) -> tuple[List[str], int]:
+        """Search via SQL LIKE on the skills table."""
+        from sqlalchemy import select, func, or_
+        from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+        from ..models.skill import Skill
+
+        engine = create_async_engine(self.db_url, echo=False)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+        async with session_factory() as session:
+            stmt = select(Skill)
+            if query:
+                pattern = f"%{query}%"
+                stmt = stmt.where(
+                    or_(
+                        Skill.name.like(pattern),
+                        Skill.description.like(pattern),
+                        Skill.author.like(pattern),
+                    )
+                )
+            if tag:
+                stmt = stmt.where(Skill.tags.contains([tag]))
+
+            # Count
+            count_stmt = select(func.count()).select_from(stmt.subquery())
+            total = (await session.execute(count_stmt)).scalar() or 0
+
+            # Sort and paginate
+            sort_col = Skill.downloads if sort == "downloads" else Skill.created_at
+            stmt = stmt.order_by(sort_col.desc()).offset((page - 1) * limit).limit(limit)
+            result = await session.execute(stmt)
+            skills = list(result.scalars().all())
+
+        await engine.dispose()
+        return [s.name for s in skills], total
+
+    async def reindex_all(self, skills: List[Dict[str, Any]]) -> None:
+        pass  # Not needed for SQLite

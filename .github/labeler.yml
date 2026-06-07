@@ -1,12 +1,18 @@
 frontend:
-  - frontend/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'frontend/**/*'
 backend:
-  - server/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'server/**/*'
 cli:
-  - cli/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'cli/**/*'
 docs:
-  - "*.md"
+  - changed-files:
+    - any-glob-to-any-file: '*.md'
 ci:
-  - .github/**/*
+  - changed-files:
+    - any-glob-to-any-file: '.github/**/*'
 deploy:
-  - deploy/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'deploy/**/*'
