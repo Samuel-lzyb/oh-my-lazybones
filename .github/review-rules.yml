@@ -26,7 +26,22 @@ rules:
       severity: error
     - id: english-only
       description: "All code, comments, docs are in English"
+      severity: error
+    - id: no-duplication-3x
+      description: "Same pattern appearing 3+ times across files — must extract into shared module"
       severity: warning
+    - id: file-size-limit
+      description: "New file >200 lines — must justify or split"
+      severity: warning
+    - id: pr-size-limit
+      description: "PR >300 lines changed — consider splitting into smaller PRs"
+      severity: warning
+    - id: design-before-code
+      description: "Feature PR linked to a design doc (design-template.md) — no design, no merge"
+      severity: error
+    - id: test-spec-before-code
+      description: "Feature PR linked to a test spec (test-spec-template.md) — no spec, no merge"
+      severity: error
 
   # ── M2: Feature Phase ─────────────────────────────────
   # Focus: "Is it good?" API design, documentation.
