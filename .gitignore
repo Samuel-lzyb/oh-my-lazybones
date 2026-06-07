@@ -30,3 +30,4 @@ node_modules/
 *.pem
 *.key
 *.crtcli/lazybones.egg-info/
+cli/lazybones.egg-info/
