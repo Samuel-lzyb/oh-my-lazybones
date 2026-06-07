@@ -12,7 +12,7 @@
   <a href="https://github.com/Samuel-lzyb/oh-my-lazybones/actions/workflows/ci.yml"><img src="https://github.com/Samuel-lzyb/oh-my-lazybones/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://lazybone.club"><img src="https://img.shields.io/badge/web-lazybone.club-amber" alt="Web"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License"></a>
   <a href="https://pypi.org/project/oh-my-lazybones/"><img src="https://img.shields.io/pypi/v/oh-my-lazybones" alt="PyPI"></a>
 </p>
 
@@ -126,4 +126,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md). Built entirely by AI Agents — see [A
 
 ## License
 
-MIT © [Samuel-lzyb](https://github.com/Samuel-lzyb)
+Apache 2.0 © [Samuel-lzyb](https://github.com/Samuel-lzyb)
