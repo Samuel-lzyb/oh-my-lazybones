@@ -13,6 +13,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
     services:
       meilisearch:
         image: getmeili/meilisearch:v1.10
@@ -22,15 +25,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install -r server/requirements.txt pip-audit
+        with: { python-version: "${{ matrix.python-version }}" }
+      - run: pip install -r server/requirements.txt
       - run: pip install -e cli/
-      - run: PYTHONPATH=. pytest --cov=server --cov-fail-under=70 --cov-report=term -v
+      - run: PYTHONPATH=. pytest --cov=server --cov-fail-under=70 --cov-report=term -v --ignore=scripts/
         env:
           MEILI_URL: http://localhost:7700
           MEILI_KEY: test-key
+
+  pip-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r server/requirements.txt pip-audit
       - run: pip-audit --ignore-vuln PYSEC-*
         continue-on-error: true
+
+  mcp-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r server/requirements.txt
+      - run: pip install -e cli/
+      - run: |
+          lazy serve --port 19527 &
+          sleep 5
+          PYTHONPATH=. python tests/test_mcp_smoke.py
+          kill %1
 
   security:
     runs-on: ubuntu-latest
