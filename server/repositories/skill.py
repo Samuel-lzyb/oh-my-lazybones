@@ -28,3 +28,15 @@ class SkillRepository(AbstractRepository[Skill]):
         if skill:
             skill.downloads += 1
             await self.session.commit()
+
+    async def count_distinct_authors(self) -> int:
+        from sqlalchemy import func, select
+        result = await self.session.execute(
+            select(func.count(func.distinct(Skill.author)))
+        )
+        return result.scalar() or 0
+
+    async def sum_downloads(self) -> int:
+        from sqlalchemy import func, select
+        result = await self.session.execute(select(func.sum(Skill.downloads)))
+        return result.scalar() or 0

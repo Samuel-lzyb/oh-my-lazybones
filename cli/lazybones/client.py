@@ -1,15 +1,19 @@
 """HTTP client for the lazybones API."""
 
+import os
 from typing import Any, Dict
 
 import httpx
+
+DEFAULT_API_URL = "http://localhost:8000"
 
 
 class LazybonesClient:
     """Async client for the oh-my-lazybones REST API."""
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
-        self.base_url = base_url.rstrip("/")
+    def __init__(self, base_url: str | None = None):
+        resolved = base_url or os.getenv("LAZY_API_URL") or DEFAULT_API_URL
+        self.base_url = resolved.rstrip("/")
 
     async def search(self, query: str) -> Dict[str, Any]:
         """Search for skills by keyword."""

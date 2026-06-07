@@ -33,16 +33,10 @@ class MeilisearchService(SearchService):
     def __init__(self, url: str, master_key: str):
         self.client = Client(url, master_key)
 
-    async def ensure_index(self) -> None:
-        """Idempotent: create or update the skills index."""
-        self.client.index(INDEX_NAME).update_settings({
-            "searchableAttributes": ["name", "description", "tags", "author"],
-            "filterableAttributes": ["tags"],
-            "sortableAttributes": ["downloads", "created_at"],
-        })
-
-    async def index(self, skill: Dict[str, Any]) -> None:
-        doc = {
+    @staticmethod
+    def _skill_to_doc(skill: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert a skill dict to a Meilisearch document."""
+        return {
             "id": skill["name"],
             "name": skill["name"],
             "version": skill.get("version", ""),
@@ -52,6 +46,17 @@ class MeilisearchService(SearchService):
             "downloads": skill.get("downloads", 0),
             "created_at": str(skill.get("created_at", "")),
         }
+
+    async def ensure_index(self) -> None:
+        """Idempotent: create or update the skills index."""
+        self.client.index(INDEX_NAME).update_settings({
+            "searchableAttributes": ["name", "description", "tags", "author"],
+            "filterableAttributes": ["tags"],
+            "sortableAttributes": ["downloads", "created_at"],
+        })
+
+    async def index(self, skill: Dict[str, Any]) -> None:
+        doc = self._skill_to_doc(skill)
         self.client.index(INDEX_NAME).add_documents([doc])
 
     async def deindex(self, name: str) -> None:
@@ -75,18 +80,6 @@ class MeilisearchService(SearchService):
         return names, total
 
     async def reindex_all(self, skills: List[Dict[str, Any]]) -> None:
-        docs = [
-            {
-                "id": s["name"],
-                "name": s["name"],
-                "version": s.get("version", ""),
-                "author": s.get("author", ""),
-                "description": s.get("description", ""),
-                "tags": s.get("tags", []),
-                "downloads": s.get("downloads", 0),
-                "created_at": str(s.get("created_at", "")),
-            }
-            for s in skills
-        ]
+        docs = [self._skill_to_doc(s) for s in skills]
         if docs:
             self.client.index(INDEX_NAME).add_documents(docs)
