@@ -46,12 +46,14 @@ Or browse at [lazybone.club](https://lazybone.club).
 
 Three ways to run your own instance — pick your level:
 
-### 🚀 Tier 1: `lazy serve` (30 seconds)
+### 🚀 Tier 1: `lazy serve` (30 seconds, dev mode)
 
-Zero dependencies beyond Python 3.10. Uses SQLite.
+Requires the full source tree. For pip-only users, use Docker (Tier 2).
 
 ```bash
-pip install oh-my-lazybones[server]
+git clone https://github.com/Samuel-lzyb/oh-my-lazybones.git
+cd oh-my-lazybones
+pip install -e cli/
 lazy serve
 # → http://localhost:9527 (REST + MCP + Web UI)
 ```
