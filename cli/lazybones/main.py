@@ -4,14 +4,22 @@ import typer
 
 app = typer.Typer(name="lazy", help="oh-my-lazybones CLI")
 
-# Register commands
-from .commands.search import search  # noqa: E402
-from .commands.install import install  # noqa: E402
+# Register top-level commands
 from .commands.serve import serve  # noqa: E402
 
-app.command()(search)
-app.command()(install)
 app.command()(serve)
+
+# Register skill subcommand group
+from .commands.skill import skill_app  # noqa: E402
+
+app.add_typer(skill_app, name="skill")
+
+# Backward-compatible aliases (deprecated, redirect to skill subcommands)
+from .commands.search import search  # noqa: E402
+from .commands.install import install  # noqa: E402
+
+app.command(name="search", deprecated=True, hidden=True)(search)
+app.command(name="install", deprecated=True, hidden=True)(install)
 
 
 def _check_version() -> None:
@@ -30,7 +38,7 @@ def _check_version() -> None:
         latest = resp.json()["info"]["version"]
         if latest != __version__:
             typer.echo(
-                f"⚠️  oh-my-lazybones v{latest} is available "
+                f"\u26a0\ufe0f  oh-my-lazybones v{latest} is available "
                 f"(you have v{__version__}). "
                 f"Run: pip install --upgrade oh-my-lazybones",
                 err=True,
