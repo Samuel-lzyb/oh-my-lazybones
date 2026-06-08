@@ -22,7 +22,7 @@
 
 ## Project Phase
 
-**Current: M5 ✅ → M6 (User Auth + Paid Skills) next.**
+**Current: Phase 1-3 ✅ → M6 (User Auth + Paid Skills) next.**
 
 | Phase | Goal | Status |
 |-------|------|:--:|
@@ -90,7 +90,7 @@ server/
   routers/       FastAPI route handlers
 cli/             Typer CLI (lazy search, lazy install, lazy serve)
 deploy/          Docker Compose (MySQL + Meilisearch) + nginx + certs
-tests/           pytest (39 tests)
+tests/           pytest (67 tests)
 Dockerfile       Multi-stage build (Node + Python)
 .env.example     Self-hosted configuration template
 ```
