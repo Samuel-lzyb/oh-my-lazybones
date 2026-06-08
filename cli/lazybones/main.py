@@ -9,6 +9,10 @@ from .commands.serve import serve  # noqa: E402
 
 app.command()(serve)
 
+# Register seed command
+from .commands.seed import seed  # noqa: E402
+app.command()(seed)
+
 # Register skill subcommand group
 from .commands.skill import skill_app  # noqa: E402
 

@@ -32,3 +32,12 @@ class LazybonesClient:
             )
             resp.raise_for_status()
             return resp.json()
+
+    async def create_skill(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new skill."""
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{self.base_url}/api/v1/skills", json=data
+            )
+            resp.raise_for_status()
+            return resp.json()
