@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] — 2026-06-08
+
+### Added
+- **Phase 1: Hierarchical exception system**
+  - `LazybonesError` base + `SkillNotFoundError` (with Did-you-mean), `SkillConflictError`, `ValidationError`, `SearchBackendError`
+  - Global exception handler: typed errors → HTTP JSON responses
+  - `suggest_name()`: difflib fuzzy matching for skill names
+- **Phase 2: Skill DSL**
+  - `depends_on` field: declare Skill dependencies
+  - `actions` field: declarative install steps (pip, env, etc.)
+  - `freeze()` method: immutable after creation
+- **Phase 2: CLI refactor**
+  - `lazy skill install <name>` / `lazy skill info <name>` subcommands
+  - Old `lazy search` / `lazy install` hidden (backward compatible)
+- **Phase 3: Tap system stubs**
+  - `TapInfo`, `TapSkill`, `TapRegistry` dataclasses
+  - Architecture for M7 Federation (Git-based third-party repos)
+- **CI: MCP smoke test** — automated 6-step MCP validation in CI
+- **CI: Python 3.10 + 3.12 matrix** — multi-version testing
+- **CI: pip-audit** — separate dependency vulnerability scanning
+- MCP tools expanded to 6: `get_skill`, `publish_skill`, `remove_skill`
+- `scripts/test_full.py`: comprehensive local full-stack test
+- **Docker publish workflow** — auto-build + push to ghcr.io on tag
+- README slogan: "Laziness, automated."
+
+### Changed
+- MCP tools: `ValueError` → typed exceptions with suggestions
+- Code audit: DRY fixes, engine reuse, single UPDATE, import cleanup (net -21 lines)
+- CI: regression + mcp-smoke failures fixed
+
+### Security
+- pip-audit job separated from test (no more silent ignores)
+
 ## [0.3.0] — 2026-06-07
 
 ### Added
