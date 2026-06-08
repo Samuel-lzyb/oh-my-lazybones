@@ -61,6 +61,18 @@ jobs:
           PYTHONPATH=. python tests/test_mcp_smoke.py
           kill %1
 
+  pypi-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      # Verify CLI works from PyPI (version only, search needs server)
+      - run: pip install oh-my-lazybones
+      - run: lazy --version
+      # Verify [server] extras install successfully
+      - run: pip install oh-my-lazybones[server]
+      - run: python -c "import fastapi, sqlalchemy, mcp; print('server deps OK')"
+
   security:
     runs-on: ubuntu-latest
     permissions:
