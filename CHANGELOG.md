@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] — 2026-06-08
+
+### Fixed
+- `lazy serve` crashes with `ModuleNotFoundError: No module named 'fastapi'` when server deps not installed
+- Added `[project.optional-dependencies] server` extras — `pip install oh-my-lazybones[server]`
+- Graceful error message: "Run: pip install oh-my-lazybones[server]"
+
 ## [0.4.0] — 2026-06-08
 
 ### Added
