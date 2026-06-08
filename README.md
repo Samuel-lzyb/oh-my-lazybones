@@ -51,9 +51,9 @@ Three ways to run your own instance — pick your level:
 Zero dependencies beyond Python 3.10. Uses SQLite.
 
 ```bash
-pip install oh-my-lazybones
+pip install oh-my-lazybones[server]
 lazy serve
-# → http://localhost:9527
+# → http://localhost:9527 (REST + MCP + Web UI)
 ```
 
 ### 📦 Tier 2: Docker (2 minutes)
