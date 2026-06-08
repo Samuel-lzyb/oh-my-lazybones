@@ -39,11 +39,14 @@ app = FastAPI(
 )
 
 from .routers import skills, stats  # noqa: E402
-from .mcp import create_mcp_app  # noqa: E402
+from .mcp import create_mcp_app, create_streamable_http_app  # noqa: E402
 
 app.include_router(skills.router)
 app.include_router(stats.router)
+# MCP: SSE (primary, backward compatible)
 app.mount("/mcp", create_mcp_app())
+# MCP: StreamableHTTP (Hermes-compatible)
+app.mount("/mcp/http", create_streamable_http_app())
 
 
 @app.exception_handler(LazybonesError)
