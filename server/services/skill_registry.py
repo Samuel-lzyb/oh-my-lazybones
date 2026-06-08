@@ -93,3 +93,10 @@ class SkillRegistry:
             await self._search.deindex(name)
         except Exception:
             pass
+
+    async def suggest(self, name: str, limit: int = 3) -> list[str]:
+        """Find skills with similar names via fuzzy matching."""
+        from ..exceptions import suggest_name
+
+        skills = await self.repo.list_all(0, 100)
+        return suggest_name(name, [s.name for s in skills], limit)

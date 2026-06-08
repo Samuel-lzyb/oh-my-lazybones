@@ -3,9 +3,11 @@
 from contextlib import asynccontextmanager
 from importlib.metadata import version as _package_version
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from .config import settings
+from .exceptions import LazybonesError, SkillConflictError, SkillNotFoundError
 
 VERSION = _package_version("oh-my-lazybones")
 
@@ -42,6 +44,21 @@ from .mcp import create_mcp_app  # noqa: E402
 app.include_router(skills.router)
 app.include_router(stats.router)
 app.mount("/mcp", create_mcp_app())
+
+
+@app.exception_handler(LazybonesError)
+async def lazybones_exception_handler(request: Request, exc: LazybonesError):
+    """Convert LazybonesError hierarchy to HTTP responses."""
+    if isinstance(exc, SkillNotFoundError):
+        status_code = 404
+    elif isinstance(exc, SkillConflictError):
+        status_code = 409
+    else:
+        status_code = 400
+    return JSONResponse(
+        status_code=status_code,
+        content={"code": type(exc).__name__, "message": str(exc)},
+    )
 
 
 @app.get("/api/v1/health")
