@@ -4,12 +4,12 @@ Uses direct service instantiation (not FastAPI Depends) because
 MCP SSE tools run outside FastAPI's request context.
 """
 
-from fastapi import HTTPException
 from mcp.server.fastmcp import FastMCP
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from ..database import engine
 from ..dependencies import get_search_service
+from ..exceptions import SkillConflictError, SkillNotFoundError
 from ..repositories.skill import SkillRepository
 from ..schemas.skill import SkillCreate, SkillSearchParams
 from ..services.skill_registry import SkillRegistry
@@ -64,8 +64,8 @@ def register_tools(mcp: FastMCP) -> None:
         registry = await _make_registry()
         try:
             skill = await registry.get_by_name(name)
-        except HTTPException:
-            raise ValueError(f"Skill '{name}' not found")
+        except Exception:
+            raise SkillNotFoundError(name)
         return _skill_to_dict(skill)
 
     @mcp.tool()
@@ -92,8 +92,8 @@ def register_tools(mcp: FastMCP) -> None:
         registry = await _make_registry()
         try:
             skill = await registry.get_by_name(name)
-        except HTTPException:
-            raise ValueError(f"Skill '{name}' not found")
+        except Exception:
+            raise SkillNotFoundError(name)
         return {"action": "installed", **_skill_to_dict(skill)}
 
     @mcp.tool()
@@ -102,8 +102,8 @@ def register_tools(mcp: FastMCP) -> None:
         registry = await _make_registry()
         try:
             await registry.delete(name)
-        except HTTPException:
-            raise ValueError(f"Skill '{name}' not found")
+        except Exception:
+            raise SkillNotFoundError(name)
         return {"action": "removed", "name": name}
 
     @mcp.tool()
@@ -133,6 +133,6 @@ def register_tools(mcp: FastMCP) -> None:
         )
         try:
             skill = await registry.create(data)
-        except HTTPException as e:
-            raise ValueError(str(e.detail))
+        except Exception:
+            raise SkillConflictError(name)
         return {"action": "published", **_skill_to_dict(skill)}
