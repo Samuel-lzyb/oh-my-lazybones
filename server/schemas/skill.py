@@ -18,6 +18,8 @@ class SkillCreate(BaseModel):
     author: str = Field(..., min_length=1, max_length=64)
     description: str = Field(default="", max_length=2000)
     tags: List[str] = Field(default=[], max_length=10)
+    depends_on: List[str] = Field(default=[], max_length=20)
+    actions: List[dict] = Field(default=[], max_length=50)
 
 
 class SkillResponse(BaseModel):
