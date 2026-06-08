@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] — 2026-06-08
+
+### Fixed
+- `lazy serve` clarifies it requires source tree (server/ not in pip package)
+- README: Tier 1 now `git clone + pip install -e cli/`, Docker is recommended path
+- `setup.py`: uvicorn added to core deps (needed for `lazy serve` import)
+
 ## [0.4.1] — 2026-06-08
 
 ### Fixed
